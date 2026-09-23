@@ -1,13 +1,18 @@
 package cartes;
 
 public class Borne extends Carte {
-    private Integer km;
+	private Integer km;
 
-    public Borne(Integer km) {
-        this.km = km;
-    }
+	public Borne(Integer km) {
+		this.km = km;
+	}
 
-    public Integer getKm() {
-        return km;
-    }
+	public Integer getKm() {
+		return km;
+	}
+
+	@Override
+	public String toString() {
+		return km + " km";
+	}
 }
