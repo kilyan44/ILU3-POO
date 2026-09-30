@@ -70,10 +70,10 @@ public class Sabot implements Iterable<Carte> {
 
 		@Override
 		public void remove() {
+			verifierModification();
 			if (!removeAutorise) {
 				throw new IllegalStateException("next() doit être appelé avant remove().");
 			}
-			verifierModification();
 
 			int indexASupprimer = curseur - 1;
 			for (int i = indexASupprimer; i < nbCartes - 1; i++) {
@@ -84,7 +84,7 @@ public class Sabot implements Iterable<Carte> {
 			curseur--;
 
 			nombreOp++;
-			nombreOpRef = nombreOp;
+			nombreOpRef++;
 			removeAutorise = false;
 		}
 

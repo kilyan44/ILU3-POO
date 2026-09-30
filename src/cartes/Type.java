@@ -8,7 +8,7 @@ public enum Type {
 	private final String nomParade;
 	private final String nomBotte;
 
-	Type(String nomAttaque, String nomParade, String nomBotte) {
+	private Type(String nomAttaque, String nomParade, String nomBotte) {
 		this.nomAttaque = nomAttaque;
 		this.nomParade = nomParade;
 		this.nomBotte = nomBotte;

@@ -1,6 +1,25 @@
 package cartes;
 
 public class JeuDeCartes {
+
+	private static class Configuration {
+		private Carte carte;
+		private Integer nbExemplaires;
+
+		private Configuration(Carte carte, Integer nbExemplaires) {
+			this.carte = carte;
+			this.nbExemplaires = nbExemplaires;
+		}
+
+		public Carte getCarte() {
+			return carte;
+		}
+
+		public Integer getNbExemplaires() {
+			return nbExemplaires;
+		}
+	}
+
 	private Configuration[] typesDeCartes = { new Configuration(new Borne(25), 10),
 			new Configuration(new Borne(50), 10), new Configuration(new Borne(75), 10),
 			new Configuration(new Borne(100), 12), new Configuration(new Borne(200), 4),
@@ -17,26 +36,28 @@ public class JeuDeCartes {
 	public String affichageJeuDeCartes() {
 		StringBuilder sb = new StringBuilder();
 		for (Configuration config : typesDeCartes) {
-			sb.append(config.getNbExemplaires()).append(" ").append(config.getCarte()).append("\n");
+			sb.append(config.getNbExemplaires());
+			sb.append(" ").append(config.getCarte()).append("\n");
 		}
 		return sb.toString();
 	}
 
 	public Carte[] donnerCartes() {
 		int total = 0;
-		for (Configuration Config : typesDeCartes) {
-			total += Config.getNbExemplaires();
+		for (int i = 0; i < typesDeCartes.length; i++) {
+			total += typesDeCartes[i].getNbExemplaires();
 		}
 
 		Carte[] cartes = new Carte[total];
-		int index = 0;
-		for (Configuration config : typesDeCartes) {
-			for (int i = 0; i < config.getNbExemplaires(); i++) {
-				cartes[index] = config.getCarte();
-				index++;
+		int debut = 0;
+		for (int i = 0; i < typesDeCartes.length; i++) {
+			Configuration config = typesDeCartes[i];
+			for (int j = 0; j < config.getNbExemplaires(); j++) {
+				cartes[debut + j] = config.getCarte();
 			}
+			debut += config.getNbExemplaires();
 		}
-		
+
 		return cartes;
 	}
 }
