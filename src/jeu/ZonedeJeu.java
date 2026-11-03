@@ -52,7 +52,7 @@ public class ZonedeJeu {
 		return Cartes.FEU_VERT.equals(sommet);
 	}
 
-	public boolean estDepotFeuVertAutorise() {
+	private boolean estDepotFeuVertAutorise() {
 		if (bataille.isEmpty()) {
 			return true;
 		}
@@ -62,23 +62,24 @@ public class ZonedeJeu {
 		}
 		return (sommet instanceof Parade) && !Cartes.FEU_VERT.equals(sommet);
 	}
-	
-	public boolean estDepotBorneAutorise(Borne borne) {
-		return peutAvancer() && borne.getKm() <= donnerLimitationVitesse() && (donnerKmParcourus() + borne.getKm() <= 1000);
+
+	private boolean estDepotBorneAutorise(Borne borne) {
+		return peutAvancer() && borne.getKm() <= donnerLimitationVitesse()
+				&& (donnerKmParcourus() + borne.getKm() <= 1000);
 	}
-	
-	public boolean estDepotLimiteAutorise(Limite lim) {
+
+	private boolean estDepotLimiteAutorise(Limite lim) {
 		if (lim instanceof DebutLimite) {
 			return limite.isEmpty() || limite.get(limite.size() - 1) instanceof FinLimite;
 		}
-		
+
 		if (lim instanceof FinLimite) {
 			return !limite.isEmpty() || limite.get(limite.size() - 1) instanceof DebutLimite;
 		}
 		return false;
 	}
 
-	public boolean estDepotBatailleAutorise(Bataille bat) {
+	private boolean estDepotBatailleAutorise(Bataille bat) {
 		if (bat instanceof Attaque) {
 			return peutAvancer();
 		}
@@ -93,5 +94,18 @@ public class ZonedeJeu {
 		}
 		return false;
 	}
-	
+
+	public boolean estDepotAutorise(Carte carte) {
+		if (carte instanceof Borne borne) {
+			return estDepotBorneAutorise(borne);
+		}
+		if (carte instanceof Limite limite) {
+			return estDepotLimiteAutorise(limite);
+		}
+		if (carte instanceof Bataille bataille) {
+			return estDepotBatailleAutorise(bataille);
+		}
+		return false;
+	}
+
 }
