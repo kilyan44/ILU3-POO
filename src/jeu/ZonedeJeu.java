@@ -1,24 +1,37 @@
 package jeu;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import cartes.Attaque;
 import cartes.Bataille;
 import cartes.Borne;
+import cartes.Botte;
 import cartes.Carte;
 import cartes.DebutLimite;
 import cartes.FinLimite;
 import cartes.Limite;
 import cartes.Parade;
+import cartes.Type;
 
 public class ZonedeJeu {
-	private List<Limite> limite = new ArrayList<>();
-	private List<Bataille> bataille = new ArrayList<>();
-	private List<Borne> borne = new ArrayList<>();
+	private List<Limite> limite;
+	private List<Bataille> bataille;
+	private List<Borne> borne;
+	private Set<Botte> bottes;
+
+	public ZonedeJeu() {
+		this.limite = new LinkedList<>();
+		this.bataille = new LinkedList<>();
+		this.borne = new ArrayList<>();
+		this.bottes = new HashSet<>();
+	}
 
 	public int donnerLimitationVitesse() {
-		if (limite.isEmpty() || limite.get(limite.size() - 1) instanceof FinLimite) {
+		if (limite.isEmpty() || limite.get(limite.size() - 1) instanceof FinLimite || estPrioritaire()) {
 			return 200;
 		}
 		return 50;
@@ -32,27 +45,43 @@ public class ZonedeJeu {
 		return totalKm;
 	}
 
-	public void deposer(Carte c) {
-		if (c instanceof Limite l) {
+	public void deposer(Carte carte) {
+		if (carte instanceof Limite l) {
 			limite.add(l);
-		}
-		if (c instanceof Bataille b) {
+		} else if (carte instanceof Bataille b) {
 			bataille.add(b);
-		}
-		if (c instanceof Borne bo) {
+		} else if (carte instanceof Borne bo) {
 			borne.add(bo);
+		} else if (carte instanceof Botte botte) {
+			bottes.add(botte);
 		}
+
 	}
 
 	public boolean peutAvancer() {
 		if (bataille.isEmpty()) {
-			return false;
+			return estPrioritaire();
 		}
 		Bataille sommet = bataille.get(bataille.size() - 1);
-		return Cartes.FEU_VERT.equals(sommet);
+		if (Cartes.FEU_VERT.equals(sommet)) {
+			return true;
+		}
+		if (sommet instanceof Parade && estPrioritaire()) {
+			return true;
+		}
+		if (sommet instanceof Attaque && sommet.getType() == Type.FEU && estPrioritaire()) {
+			return true;
+		}
+		if (sommet instanceof Attaque && aBottePourType(sommet.getType()) && estPrioritaire()) {
+			return true;
+		}
+		return false;
 	}
 
-	private boolean estDepotFeuVertAutorise() {
+	public boolean estDepotFeuVertAutorise() {
+		if (estPrioritaire()) {
+			return false;
+		}
 		if (bataille.isEmpty()) {
 			return true;
 		}
@@ -60,7 +89,13 @@ public class ZonedeJeu {
 		if (Cartes.FEU_ROUGE.equals(sommet)) {
 			return true;
 		}
-		return (sommet instanceof Parade) && !Cartes.FEU_VERT.equals(sommet);
+		if (sommet instanceof Parade && !Cartes.FEU_VERT.equals(sommet)) {
+			return true;
+		}
+		if (sommet instanceof Attaque && aBottePourType(sommet.getType())) {
+			return true;
+		}
+		return false;
 	}
 
 	private boolean estDepotBorneAutorise(Borne borne) {
@@ -69,6 +104,9 @@ public class ZonedeJeu {
 	}
 
 	private boolean estDepotLimiteAutorise(Limite lim) {
+		if (estPrioritaire()) {
+			return false;
+		}
 		if (lim instanceof DebutLimite) {
 			return limite.isEmpty() || limite.get(limite.size() - 1) instanceof FinLimite;
 		}
@@ -80,6 +118,9 @@ public class ZonedeJeu {
 	}
 
 	private boolean estDepotBatailleAutorise(Bataille bat) {
+		if (aBottePourType(bat.getType())) {
+			return false;
+		}
 		if (bat instanceof Attaque) {
 			return peutAvancer();
 		}
@@ -96,6 +137,9 @@ public class ZonedeJeu {
 	}
 
 	public boolean estDepotAutorise(Carte carte) {
+		if (carte instanceof Botte) {
+			return true;
+		}
 		if (carte instanceof Borne borne) {
 			return estDepotBorneAutorise(borne);
 		}
@@ -106,6 +150,14 @@ public class ZonedeJeu {
 			return estDepotBatailleAutorise(bataille);
 		}
 		return false;
+	}
+
+	public boolean estPrioritaire() {
+		return bottes.contains(Cartes.PRIORITAIRE);
+	}
+
+	private boolean aBottePourType(Type type) {
+		return bottes.contains(new Botte(type));
 	}
 
 }
