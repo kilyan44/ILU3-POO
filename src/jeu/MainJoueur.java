@@ -50,4 +50,6 @@ public class MainJoueur implements Iterable<Carte> {
 		donner(carte);
 		return carte;
 	}
+	
+	
 }

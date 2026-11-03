@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class GestionCartes {
 	private GestionCartes() {
-		/* This utility class should not be instantiated */
+		throw new UnsupportedOperationException("Classe utilitaire : ne peut pas être instanciée");
 	}
 
 	private static Random random = new Random();
@@ -20,11 +20,8 @@ public class GestionCartes {
 
 	public static <T> T extraireIterator(List<T> liste) {
 		int index = random.nextInt(liste.size());
-		ListIterator<T> it = liste.listIterator();
+		ListIterator<T> it = liste.listIterator(index);
 		T element = null;
-		for (int i = 0; i <= index; i++) {
-			element = it.next();
-		}
 		it.remove();
 		return element;
 	}
@@ -67,8 +64,17 @@ public class GestionCartes {
 		return resultat;
 	}
 
+	private static <T> boolean estPresentApres(ListIterator<T> it, T element) {
+		while (it.hasNext()) {
+			if (element.equals(it.next())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static <T> boolean verifierRassemblement(List<T> liste) {
-		if (liste.isEmpty() || liste.size() == 1) {
+		if (liste.size() <= 1) {
 			return true;
 		}
 
@@ -79,10 +85,8 @@ public class GestionCartes {
 			T suivant = it1.next();
 			if (!courant.equals(suivant)) {
 				ListIterator<T> it2 = liste.listIterator(it1.nextIndex());
-				while (it2.hasNext()) {
-					if (courant.equals(it2.next())) {
-						return false;
-					}
+				if (estPresentApres(it2, courant)) {
+					return false;
 				}
 				courant = suivant;
 			}

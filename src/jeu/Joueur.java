@@ -1,12 +1,14 @@
 package jeu;
 
+import cartes.Carte;
+
 public class Joueur {
 	private String nom;
 	private ZonedeJeu zoneDeJeu;
 	
 	public Joueur(String nom) {
 		this.nom = nom;
-		this.zoneDeJeu = new ZonedeJeu();
+		this.zoneDeJeu= new ZonedeJeu();
 	}
 	
 	@Override
@@ -25,5 +27,13 @@ public class Joueur {
 	@Override
 	public String toString() {
 		return nom;
+	}
+	
+	public int donnerKmParcourus() {
+		return zoneDeJeu.donnerKmParcourus();
+	}
+	
+	public void deposer(Carte c) {
+		zoneDeJeu.deposer(c);
 	}
 }
